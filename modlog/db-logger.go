@@ -1,4 +1,4 @@
-package gormlogger
+package modlog
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fighterlyt/log"
+	log "github.com/ishaqcherry9/depend/pkg/logger"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gorm.io/gorm/utils"
@@ -51,7 +51,7 @@ func (l *Logger) LogMode(level logger.LogLevel) logger.Interface {
 	return l
 }
 
-// 	callbacks.go replace c.processor.db.Logger.Info(context.Background(), "replacing callback `%v` from %v\n", name, utils.FileWithLineNum())
+// callbacks.go replace c.processor.db.Logger.Info(context.Background(), "replacing callback `%v` from %v\n", name, utils.FileWithLineNum())
 func (l Logger) Info(ctx context.Context, msg string, data ...interface{}) {
 	l.Logger.Info(fmt.Sprintf(msg, data...))
 }

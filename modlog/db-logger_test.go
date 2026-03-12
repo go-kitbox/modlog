@@ -1,11 +1,11 @@
-package gormlogger
+package modlog
 
 import (
 	"context"
 	"testing"
 	"time"
 
-	"github.com/fighterlyt/log"
+	log "github.com/ishaqcherry9/depend/pkg/logger"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zapcore"
 	"gorm.io/driver/mysql"
@@ -25,7 +25,7 @@ var (
 )
 
 func TestNewLogger(t *testing.T) {
-	cfg := &log.Config{
+	cfg := &Config{
 		Debug:   true,
 		Service: "测试",
 		Level:   zapcore.DebugLevel,

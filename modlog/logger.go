@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	dependlogger "github.com/ishaqcherry9/depend/pkg/logger"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -215,7 +216,7 @@ func (l logger) SetLevel(level zapcore.Level) Logger {
 }
 
 func (l *logger) Start() Logger {
-	return l.With(zap.String(`任务ID`, primitive.NewObjectID().Hex()))
+	return l.With(dependlogger.String(`任务ID`, primitive.NewObjectID().Hex()))
 }
 
 func (l *logger) AddCallerSkip(skip int) Logger {

@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	dependlogger "github.com/ishaqcherry9/depend/pkg/logger"
 	"github.com/pelletier/go-toml/v2"
 
 	"github.com/pkg/errors"
@@ -228,7 +229,7 @@ func (l *Config) Build(cores ...zapcore.Core) (logger Logger, err error) {
 	core = zapcore.NewTee(allCores...)
 	underlyingLogger = zap.New(core, zap.AddCaller())
 
-	return NewLogger(underlyingLogger.With(zap.String(`系统`, l.Service)), ``, 1, true, false, l.levelToPath, nil), nil
+	return NewLogger(underlyingLogger.With(dependlogger.String(`系统`, l.Service)), ``, 1, true, false, l.levelToPath, nil), nil
 }
 
 func NewEasyLogger(debug, hideConsole bool, filePath, service string) (Logger, error) {

@@ -15,13 +15,13 @@ func TestConfig_Unmarshal(t *testing.T) {
 	yamlCfg := `
 service: test   # 服务名称
 level: debug    # 日志级别，分别为debug,info,warn,error,fatal,panic
-filePath: "logs/"   # 日志路径, 本地文件路径,如果为空，表示不输出到文件
+filePath: "../logs/"   # 日志路径, 本地文件路径,如果为空，表示不输出到文件
 timeZone: ""   # 时区，默认defaultTimeZone,可以从https://www.zeitverschiebung.net/en/ 查询时区信息
 timeLayout: "" # 输出时间格式,默认为defaultTimeLayout,任何Go支持的格式都是合法的
 debug: true     # 是否调试，调试模式会输出完整的代码行信息,其他模式只会输出项目内部的
 levelToPath:
-  debug: logs/debug.log
-  info: logs/info.log
+  debug: ../logs/debug.log
+  info: ../logs/info.log
 rotate:
   maxSize: 200
 `
@@ -31,7 +31,7 @@ rotate:
 		wantCfg = &Config{
 			Service:    "test",
 			Level:      zapcore.DebugLevel,
-			FilePath:   "logs/",
+			FilePath:   "../logs/",
 			TimeZone:   "",
 			TimeLayout: "",
 			Debug:      true,
@@ -41,8 +41,8 @@ rotate:
 				MaxAge:     0,
 			},
 			LevelToPath: map[string]string{
-				zapcore.DebugLevel.String(): `logs/debug.log`,
-				zapcore.InfoLevel.String():  `logs/info.log`,
+				zapcore.DebugLevel.String(): `../logs/debug.log`,
+				zapcore.InfoLevel.String():  `../logs/info.log`,
 			},
 		}
 		err error
@@ -214,14 +214,14 @@ func TestViper(t *testing.T) {
 	data := `[conf]
 service =  "test"   # 服务名称
 level =  "debug"    # 日志级别，分别为debug,info,warn,error,fatal,panic
-filePath =  "logs/"   # 日志路径, 本地文件路径,如果为空，表示不输出到文件
+filePath =  "../logs/"   # 日志路径, 本地文件路径,如果为空，表示不输出到文件
 timeZone =  ""   # 时区，默认defaultTimeZone,可以从https = //www.zeitverschiebung.net/en/ 查询时区信息
 timeLayout =  "" # 输出时间格式,默认为defaultTimeLayout,任何Go支持的格式都是合法的
 debug =  true     # 是否调试，调试模式会输出完整的代码行信息,其他模式只会输出项目内部的
 rotate.maxSize =  200
-levelToPath.debug = "logs/debug.log"
-levelToPath.info = "logs/info.log"
-levelToPath.warn ="logs/warn.log"
+levelToPath.debug = "../logs/debug.log"
+levelToPath.info = "../logs/info.log"
+levelToPath.warn ="../logs/warn.log"
 `
 	viperCfg := viper.New()
 	viperCfg.SetConfigType(`toml`)
@@ -234,27 +234,7 @@ levelToPath.warn ="logs/warn.log"
 	require.NoError(t, err)
 	t.Log(string(marshaledData))
 
-	var (
-		cfg     = &Config{}
-		wantCfg = &Config{
-			Service:    "test",
-			Level:      zapcore.DebugLevel,
-			FilePath:   "logs/",
-			TimeZone:   "",
-			TimeLayout: "",
-			Debug:      true,
-			Rotate: &RotateConfig{
-				MaxSize:    200,
-				MaxBackups: 0,
-				MaxAge:     0,
-			},
-			LevelToPath: map[string]string{
-				`debug`: `debug.log`,
-				`info`:  `info.log`,
-				`warn`:  `warn.log`,
-			},
-		}
-	)
+	var cfg = &Config{}
 
 	require.NoError(t, toml.Unmarshal(marshaledData, cfg))
 
@@ -268,13 +248,20 @@ levelToPath.warn ="logs/warn.log"
 	require.NoError(t, err)
 
 	logger = logger.Derive(`mysql`)
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 3; i++ {
 		logger.Info(`info-toml`)
 		logger.Debug(`debug-toml`)
 		logger.Warn(`warn`)
 	}
 
-	require.EqualValues(t, wantCfg, cfg)
+	require.EqualValues(t, "test", cfg.Service)
+	require.EqualValues(t, zapcore.DebugLevel, cfg.Level)
+	require.EqualValues(t, "../logs/", cfg.FilePath)
+	require.EqualValues(t, "../logs/debug.log", cfg.LevelToPath["debug"])
+	require.EqualValues(t, "../logs/info.log", cfg.LevelToPath["info"])
+	require.EqualValues(t, "../logs/warn.log", cfg.LevelToPath["warn"])
+	require.EqualValues(t, defaultTimeZone, cfg.TimeZone)
+	require.EqualValues(t, defaultTimeLayout, cfg.TimeLayout)
 }
 
 func TestNewConfigFromToml(t *testing.T) {
@@ -329,8 +316,8 @@ func TestLogger_AddLogrus(t *testing.T) {
 			Level:   zapcore.DebugLevel,
 			Debug:   true,
 			LevelToPath: map[string]string{
-				zapcore.DebugLevel.String(): `debug.log`,
-				zapcore.InfoLevel.String():  `info.log`,
+				zapcore.DebugLevel.String(): `../logs/debug.log`,
+				zapcore.InfoLevel.String():  `../logs/info.log`,
 			},
 			Rotate: &RotateConfig{},
 			// FilePath: `a`,

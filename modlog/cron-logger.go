@@ -12,16 +12,16 @@ type cronLogger struct {
 	Logger
 }
 
+func NewCronLogger(targetLogger Logger) *cronLogger {
+	return &cronLogger{Logger: targetLogger}
+}
+
 func (l cronLogger) Printf(format string, values ...interface{}) {
 	l.Logger.Info(fmt.Sprintf(format, values...))
 }
 
 func (l cronLogger) Error(err error, msg string, keysAndValues ...interface{}) {
 	l.Logger.Error(fmt.Sprintf(msg, keysAndValues...), zap.Error(err))
-}
-
-func NewCronLogger(targetLogger Logger) *cronLogger {
-	return &cronLogger{Logger: targetLogger}
 }
 
 func DeriveCronLogger(baseLogger Logger, topic, method string) Logger {
@@ -47,20 +47,15 @@ func cronFormatTimes(keysAndValues []interface{}) []interface{} {
 // key/values. 注意:来自cron库
 func cronFormatString(numKeysAndValues int) string {
 	var sb strings.Builder
-
 	sb.WriteString("%s")
-
 	if numKeysAndValues > 0 {
 		sb.WriteString(", ")
 	}
-
 	for i := 0; i < numKeysAndValues/2; i++ {
 		if i > 0 {
 			sb.WriteString(", ")
 		}
-
 		sb.WriteString("%v=%v")
 	}
-
 	return sb.String()
 }

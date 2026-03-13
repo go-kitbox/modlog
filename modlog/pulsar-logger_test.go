@@ -15,12 +15,12 @@ func TestPulsarLogger_NewAndFieldMethods(t *testing.T) {
 
 	sub := target.SubLogger(pulsarlog.Fields{"k1": "v1"})
 	require.NotNil(t, sub)
-	_, ok := sub.(*pulsarLogger)
+	_, ok := sub.(*PulsarLogger)
 	require.True(t, ok)
 
 	entry := target.WithFields(pulsarlog.Fields{"k2": 2})
 	require.NotNil(t, entry)
-	_, ok = entry.(*pulsarLogger)
+	_, ok = entry.(*PulsarLogger)
 	require.True(t, ok)
 
 	_ = target.WithField("k3", true)
@@ -47,4 +47,3 @@ func TestPulsarLogger_LevelsAndFormat(t *testing.T) {
 	require.Equal(t, "d-1", logs.All()[4].Message)
 	require.Equal(t, "e-4", logs.All()[7].Message)
 }
-

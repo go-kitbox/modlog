@@ -15,6 +15,32 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// LoggerConfig 日志配置
+type LoggerConfig struct {
+	Format       string       `yaml:"format" json:"format"`             // 日志格式
+	IsSave       bool         `yaml:"isSave" json:"isSave"`             // 是否保存日志
+	FileOptions  *FileOptions `yaml:"fileOptions" json:"fileOptions"`   // 文件选项
+	DefaultLevel string       `yaml:"defaultLevel" json:"defaultLevel"` // 默认日志级别
+}
+type FileOptions struct {
+	Filename      string `yaml:"filename" json:"filename"`           // 日志文件名
+	MaxSize       int    `yaml:"maxSize" json:"maxSize"`             // 单个日志文件最大大小，单位为MB
+	MaxBackups    int    `yaml:"maxBackups" json:"maxBackups"`       // 最大部分数量
+	MaxAge        int    `yaml:"maxAge" json:"maxAge"`               // 最大保留时间,单位为天
+	IsCompression bool   `yaml:"isCompression" json:"isCompression"` // 是否压缩
+	IsLocalTime   bool   `yaml:"isLocalTime" json:"isLocalTime"`     // 是否使用本地时间
+}
+
+const (
+	FormatConsole = "console"
+	FormatJSON    = "json"
+
+	LevelDebug = "DEBUG"
+	LevelInfo  = "INFO"
+	LevelWarn  = "WARN"
+	LevelError = "ERROR"
+)
+
 const (
 	// defaultTimeZone 默认时区
 	defaultTimeZone = `Asia/Shanghai`
